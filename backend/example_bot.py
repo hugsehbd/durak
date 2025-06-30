@@ -22,29 +22,31 @@ class ExampleBot(AbstractBot):
 
     def optional_attack(self):
         for card in self.get_hand():
-            for attacking_card in self.get_table_attack():
-                if attacking_card[0] == card[0]:
+            for table_card in self.get_table_attack() + self.get_table_defence():
+                if table_card is None:
+                    continue
+                if table_card[0] == card[0]:
                     self.log(f"Joining attack with: {card}")
                     return [card]
         self.log("Passing on joining attack.")
         return []
 
     def first_attack(self):
-        self.log(f"Starting attack with {card[0]}")
-        return card[0]
+        self.log(f"Starting attack with {self.get_hand()[0]}")
+        return self.get_hand()[0:1]
 
     def defence(self):
         defending_cards, indexes = [],[]
         # if possible to forward
         if all(card is None for card in self.get_table_defence()):
-            num = [card for card in self.get_table_attack() if card is not None][0][0]
+            num = [card for card in self.get_table_attack()+self.get_table_defence() if card is not None][0][0]
             for card in self.get_hand():
                 if card[0] == num:
                     # forward
                     self.log(f"Forwarding {card}")
                     return [card],[]
         for index,attacking_card in enumerate(self.get_table_attack()):
-            if attacking_card is None:
+            if attacking_card is None or self.get_table_defence()[index] is not None:
                 continue
             flag: bool = False
             for card in self.get_hand():
