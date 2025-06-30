@@ -183,10 +183,13 @@ def delete_bot(filename: str):
 def create_game_state(num_bots):
     deck = shuffle(create_deck())
     if USE_FIXED_DECK:
-        with open("deck.txt","r") as f:
-            deck_str = f.read()
-        deck = [tuple([int(x) for x in s.split(",")]) for s in deck_str.split()]
-        deck = [{"rank": RANKS[c[0]], "suit": SUITS[c[1]]} for c in deck]
+        try:
+            with open("deck.txt","r") as f:
+                deck_str = f.read()
+                deck = [tuple([int(x) for x in s.split(",")]) for s in deck_str.split()]
+                deck = [{"rank": RANKS[c[0]], "suit": SUITS[c[1]]} for c in deck]
+        except Exception as e:
+            pass
 
     with open("deck.txt", "w") as file:
         for c in deck:
